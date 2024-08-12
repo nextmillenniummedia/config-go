@@ -1,7 +1,6 @@
 package params
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/be-true/config-go/errors"
@@ -10,17 +9,19 @@ import (
 
 func parseParams(tag string) (*Params, error) {
 	paramsMap, err := getParamsMap(tag)
-	fmt.Println(paramsMap)
 	if err != nil {
 		return nil, err
 	}
-
 	required, err := utils.ParseBoolean(paramsMap["required"], true)
 	if err != nil {
 		return nil, err
 	}
+	format := strings.ToLower(paramsMap["format"])
+	doc := paramsMap["doc"]
 	return &Params{
 		Required: required,
+		Format:   format,
+		Doc:      doc,
 	}, nil
 }
 
@@ -37,7 +38,7 @@ func getParamsMap(tag string) (map[string]string, error) {
 			value = split[1]
 		}
 		name := split[0]
-		result[name] = value
+		result[name] = utils.TrimEscape(value)
 	}
 	return result, nil
 }
