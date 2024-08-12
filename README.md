@@ -7,7 +7,7 @@
 type Config struct {
 	Env      string   `config:"enum=local|dev|qa|stage|prod"`
 	Port     int      `config:"format=port,default=3000"`
-	Hosts    []string `config:"format=url,require,splitter=|"`
+	Hosts    []string `config:"format=url,require,splitter=|,doc='You doc info'"`
 	Enabled  bool     `config:"format=boolean,default=true"`
 }
 ```
@@ -18,7 +18,7 @@ conf := Config{}
 setup := config.Setup{
     suffix: "APPLICATION_",
 }
-err := config.MarshalFromEnv(&conf, setup)
+err := config.FromEnv(&conf, setup)
 ```
 
 In system has variables:
@@ -37,3 +37,19 @@ Config{
     Hosts: []{"domain1.com:5555", "domain2.com:5555"},
     Enabled: true,
 }
+```
+
+- If in config has errors, than you may call method for visualize errors in terminal
+
+```go
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+- Errors will printed in terminal as md table
+```bash
+| error    | env               | format | doc          | example                      |
+|----------|-------------------|--------|--------------|------------------------------|
+| required | APPLICATION_HOSTS | url    | You doc info | domain1:port1\|domain2:port2 |
+```
