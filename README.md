@@ -1,5 +1,14 @@
 # Config system for go lang apps
 
+## TODO
+
+- Set int field
+- Set int[], string[]..
+- Required error
+- Url formatter
+- Array parser
+- Formatter and type matching
+
 ## Example of usage
 
 - If you described config like below
