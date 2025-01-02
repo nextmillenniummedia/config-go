@@ -7,7 +7,7 @@ import (
 	"github.com/be-true/config-go/utils"
 )
 
-func parseParams(tag string) (*Params, error) {
+func ParseParams(tag string) (*Params, error) {
 	paramsMap, err := getParamsMap(tag)
 	if err != nil {
 		return nil, err
@@ -18,7 +18,9 @@ func parseParams(tag string) (*Params, error) {
 	}
 	format := strings.ToLower(paramsMap["format"])
 	doc := paramsMap["doc"]
+	field := paramsMap["field"]
 	return &Params{
+		Field:    field,
 		Required: required,
 		Format:   format,
 		Doc:      doc,

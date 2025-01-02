@@ -25,7 +25,7 @@ func TestParseRequired(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		params, err := parseParams(test.value)
+		params, err := ParseParams(test.value)
 		assert.Equal(test.params.Required, params.Required, test)
 		assert.Nil(err, test)
 	}
@@ -40,7 +40,7 @@ func TestParseRequiredErrors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		params, err := parseParams(test.value)
+		params, err := ParseParams(test.value)
 		assert.Nil(params, test)
 		assert.Equal(test.err, err, test)
 	}
@@ -59,7 +59,7 @@ func TestParseFormat(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		params, err := parseParams(test.value)
+		params, err := ParseParams(test.value)
 		assert.Equal(test.params.Format, params.Format, test)
 		assert.Nil(err, test)
 	}
@@ -75,8 +75,24 @@ func TestParseDoc(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		params, err := parseParams(test.value)
+		params, err := ParseParams(test.value)
 		assert.Equal(test.params.Doc, params.Doc, test)
+		assert.Nil(err, test)
+	}
+}
+
+func TestParseField(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	tests := []TestItem{
+		{"field=PORT", Params{Field: "PORT"}, nil},
+		{"doc='With space'", Params{Doc: "With space"}, nil},
+	}
+
+	for _, test := range tests {
+		params, err := ParseParams(test.value)
+		assert.Equal(test.params.Field, params.Field, test)
 		assert.Nil(err, test)
 	}
 }
