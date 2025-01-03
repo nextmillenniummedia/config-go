@@ -2,7 +2,7 @@
 
 ## TODO
 
-- Set int field
+- tests for errors
 - Set int[], string[]..
 - Required error
 - Enum
@@ -24,11 +24,12 @@ type Config struct {
 
 - Than you call parsing envs variable to this config
 ```go
-conf := Config{}
-setup := config.Setup{
-    suffix: "APPLICATION_",
+inst := Config{}
+settings := envs.SettingsEnv{
+    Prefix: "APPLICATION",
 }
-err := config.FromEnv(&conf, setup)
+config.InitConfigEnvs(settings)
+err := config.Process(&inst)
 ```
 
 In system has variables:

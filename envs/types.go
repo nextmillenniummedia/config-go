@@ -1,6 +1,6 @@
 package envs
 
-type ConfigSettingEnvs struct {
+type SettingEnvs struct {
 	Title  string // Config title
 	Prefix string // Prefix of names for all environment variables
 }
