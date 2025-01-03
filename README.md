@@ -3,7 +3,8 @@
 ## TODO
 
 - tests for errors
-- Set int[], string[]..
+- float, []float
+- custom splitter
 - Required error
 - Enum
 - Url formatter

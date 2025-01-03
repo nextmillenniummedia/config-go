@@ -62,6 +62,26 @@ func (c *ConfigEnvs) Process(conf any) (err error) {
 				continue
 			}
 			field.SetBool(envBool)
+		case reflect.Slice:
+			elemKind := field.Type().Elem().Kind()
+			items := strings.Split(env, ",")
+			newSlice := reflect.MakeSlice(field.Type(), len(items), len(items))
+			switch elemKind {
+			case reflect.String:
+				for j, item := range items {
+					newSlice.Index(j).SetString(item)
+				}
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				for j, item := range items {
+					envInt, err := strconv.Atoi(item)
+					if err != nil {
+						errs = append(errs, err)
+						continue
+					}
+					newSlice.Index(j).SetInt(int64(envInt))
+				}
+			}
+			field.Set(newSlice)
 		}
 	}
 	return errors.Join(errs...)
