@@ -5,6 +5,7 @@
 - Set int field
 - Set int[], string[]..
 - Required error
+- Enum
 - Url formatter
 - Array parser
 - Formatter and type matching
