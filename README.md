@@ -2,13 +2,11 @@
 
 ## TODO
 
-- tests for errors
-- float, []float
 - custom splitter
-- Required error
 - Enum
 - Url formatter
-- Array parser
+- Required error
+- tests for errors
 - Formatter and type matching
 
 ## Example of usage
