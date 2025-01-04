@@ -49,7 +49,7 @@ func TestConfigBool(t *testing.T) {
 	assert.Equal(true, config.Value)
 }
 
-func TestConfigInt(t *testing.T) {
+func TestConfigFloat(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()
 
@@ -80,6 +80,30 @@ func TestConfigInt(t *testing.T) {
 	assert.Equal(int16(16), config.Int16)
 	assert.Equal(int32(32), config.Int32)
 	assert.Equal(int64(64), config.Int64)
+}
+
+func TestConfigInt(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Float32 float32 `config:"field=32"`
+		Float64 float64 `config:"field=64"`
+	}
+	config := Config{}
+	settings := envs.SettingEnvs{
+		Prefix: "FLOAT",
+	}
+	envGetter := envs.NewEnvsGetterMock(map[string]string{
+		"FLOAT_32": "32.5",
+		"FLOAT_64": "64.5",
+	})
+	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
+	err := processor.Process(&config)
+
+	assert.Nil(err)
+	assert.Equal(float32(32.5), config.Float32)
+	assert.Equal(float64(64.5), config.Float64)
 }
 
 func TestConfigSliceInt(t *testing.T) {
@@ -134,4 +158,28 @@ func TestConfigSliceString(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal([]string{"a", "b"}, config.Text)
+}
+
+func TestConfigSliceFloat(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Float32 []float32 `config:"field=32"`
+		Float64 []float64 `config:"field=64"`
+	}
+	config := Config{}
+	settings := envs.SettingEnvs{
+		Prefix: "FLOAT",
+	}
+	envGetter := envs.NewEnvsGetterMock(map[string]string{
+		"FLOAT_32": "32.5,132.5",
+		"FLOAT_64": "64.5,164.5",
+	})
+	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
+	err := processor.Process(&config)
+
+	assert.Nil(err)
+	assert.Equal([]float32{32.5, 132.5}, config.Float32)
+	assert.Equal([]float64{64.5, 164.5}, config.Float64)
 }
