@@ -16,11 +16,16 @@ func ParseParams(tag string) (*Params, error) {
 	if err != nil {
 		return nil, err
 	}
+	splitter := strings.ToLower(paramsMap["splitter"])
+	if len(splitter) == 0 {
+		splitter = ","
+	}
 	format := strings.ToLower(paramsMap["format"])
 	doc := paramsMap["doc"]
 	field := paramsMap["field"]
 	return &Params{
 		Field:    field,
+		Splitter: splitter,
 		Required: required,
 		Format:   format,
 		Doc:      doc,

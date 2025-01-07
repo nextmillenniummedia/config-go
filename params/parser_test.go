@@ -96,3 +96,19 @@ func TestParseField(t *testing.T) {
 		assert.Nil(err, test)
 	}
 }
+
+func TestParseSplitter(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	tests := []TestItem{
+		{"splitter=|", Params{Splitter: "|"}, nil},
+		{"doc=''", Params{Splitter: ","}, nil},
+	}
+
+	for _, test := range tests {
+		params, err := ParseParams(test.value)
+		assert.Equal(test.params.Splitter, params.Splitter, test)
+		assert.Nil(err, test)
+	}
+}

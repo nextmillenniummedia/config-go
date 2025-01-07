@@ -7,6 +7,8 @@ package params
 type Params struct {
 	// Field name
 	Field string
+	// Splitter for array value
+	Splitter string
 	// Format for field
 	Format string
 	// Field is required or not

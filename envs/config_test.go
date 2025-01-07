@@ -183,3 +183,24 @@ func TestConfigSliceFloat(t *testing.T) {
 	assert.Equal([]float32{32.5, 132.5}, config.Float32)
 	assert.Equal([]float64{64.5, 164.5}, config.Float64)
 }
+
+func TestConfigSliceSplitter(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Int []int `config:"field=default,splitter=|"`
+	}
+	config := Config{}
+	settings := envs.SettingEnvs{
+		Prefix: "INT",
+	}
+	envGetter := envs.NewEnvsGetterMock(map[string]string{
+		"INT_DEFAULT": "1|2",
+	})
+	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
+	err := processor.Process(&config)
+
+	assert.Nil(err)
+	assert.Equal([]int{1, 2}, config.Int)
+}

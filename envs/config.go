@@ -57,7 +57,7 @@ func (c *ConfigEnvs) Process(conf any) (err error) {
 			setBool(&field, env, &errs)
 		case reflect.Slice:
 			elemKind := field.Type().Elem().Kind()
-			envs := strings.Split(env, ",")
+			envs := strings.Split(env, params.Splitter)
 			slice := reflect.MakeSlice(field.Type(), len(envs), len(envs))
 			switch elemKind {
 			case reflect.String:
