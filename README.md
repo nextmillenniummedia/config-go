@@ -2,11 +2,10 @@
 
 ## TODO
 
-- custom splitter
-- Enum
-- Url formatter
 - Required error
 - tests for errors
+- Enum
+- Url formatter
 - Formatter and type matching
 
 ## Example of usage

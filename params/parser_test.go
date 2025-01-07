@@ -103,7 +103,7 @@ func TestParseSplitter(t *testing.T) {
 
 	tests := []TestItem{
 		{"splitter=|", Params{Splitter: "|"}, nil},
-		{"doc=''", Params{Splitter: ","}, nil},
+		{"", Params{Splitter: ","}, nil},
 	}
 
 	for _, test := range tests {
