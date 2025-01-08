@@ -1,142 +1,73 @@
 package envs
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
-	"strconv"
-	"strings"
 
+	"github.com/be-true/config-go/errors"
 	"github.com/be-true/config-go/params"
-	"github.com/be-true/config-go/utils"
 )
 
 type ConfigEnvs struct {
-	envGetter IEnvGetter
-	settings  SettingEnvs
+	config   any
+	settings SettingEnvs
+	items    []*ConfigItem
 }
 
-func InitConfigEnvs(settings SettingEnvs) *ConfigEnvs {
-	return &ConfigEnvs{
-		envGetter: NewEnvGetter(),
-		settings:  settings,
-	}
-}
-
-func (c *ConfigEnvs) SetEnvGetter(getter IEnvGetter) *ConfigEnvs {
-	c.envGetter = getter
-	return c
-}
-
-func (c *ConfigEnvs) Process(conf any) (err error) {
-	errs := make([]error, 0)
-	value := reflect.ValueOf(conf).Elem()
+func InitConfigEnvs(config any, settings SettingEnvs) *ConfigEnvs {
+	value := reflect.ValueOf(config).Elem()
 	typed := value.Type()
+	items := make([]*ConfigItem, 0)
 	for i := 0; i < value.NumField(); i++ {
 		field := value.Field(i)
+		fieldType := typed.Field(i)
+		fieldName := typed.Field(i).Name
 		if !field.CanSet() {
+			// TODO[pt]: need check for pointer or error
 			continue
 		}
 		tag := typed.Field(i).Tag.Get("config")
 		params, err := params.ParseParams(tag)
 		if err != nil {
-			errs = append(errs, err)
-			continue
+			panic(err)
 		}
-		envName := GetFieldName(typed.Field(i).Name, c.settings.Prefix, params)
-		env, _ := c.envGetter.Get(envName)
+		items = append(items, NewConfigItem(
+			&field,
+			fieldName,
+			&fieldType,
+			params,
+			settings.Prefix,
+		))
+	}
 
-		switch field.Kind() {
-		case reflect.String:
-			setString(&field, env, &errs)
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			setInt(&field, env, &errs)
-		case reflect.Float32, reflect.Float64:
-			setFloat(&field, env, &errs)
-		case reflect.Bool:
-			setBool(&field, env, &errs)
-		case reflect.Slice:
-			elemKind := field.Type().Elem().Kind()
-			envs := strings.Split(env, params.Splitter)
-			slice := reflect.MakeSlice(field.Type(), len(envs), len(envs))
-			switch elemKind {
-			case reflect.String:
-				setSliceString(&slice, envs, &errs)
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				setSliceInt(&slice, envs, &errs)
-			case reflect.Float32, reflect.Float64:
-				setSliceFloat(&slice, envs, &errs)
-			}
-			field.Set(slice)
+	return &ConfigEnvs{
+		config:   config,
+		settings: settings,
+		items:    items,
+	}
+}
+
+func (c *ConfigEnvs) Process() (err error) {
+	for _, item := range c.items {
+		item.Process()
+	}
+	if c.hasErrors() {
+		return errors.ErrorConfig
+	}
+	return nil
+}
+
+func (c *ConfigEnvs) SetEnvGetter(getter IEnvGetter) *ConfigEnvs {
+	for _, item := range c.items {
+		item.SetEnvGetter(getter)
+	}
+	return c
+}
+
+func (c ConfigEnvs) hasErrors() bool {
+	for _, item := range c.items {
+		if item.HasError() {
+			return true
 		}
 	}
-	return errors.Join(errs...)
-}
-
-func GetFieldName(structName string, prefix string, params *params.Params) string {
-	fieldName := structName
-	if len(params.Field) > 0 {
-		fieldName = params.Field
-	}
-	fieldName = strings.ToUpper(fieldName)
-	return fmt.Sprintf("%s_%s", prefix, fieldName)
-}
-
-func setString(field *reflect.Value, env string, errs *[]error) {
-	field.SetString(env)
-}
-
-func setInt(field *reflect.Value, env string, errs *[]error) {
-	envInt, err := strconv.Atoi(env)
-	if err != nil {
-		*errs = append(*errs, err)
-		return
-	}
-	field.SetInt(int64(envInt))
-}
-
-func setFloat(field *reflect.Value, env string, errs *[]error) {
-	envFloat, err := strconv.ParseFloat(env, 64)
-	if err != nil {
-		*errs = append(*errs, err)
-		return
-	}
-	field.SetFloat(envFloat)
-}
-
-func setBool(field *reflect.Value, env string, errs *[]error) {
-	envBool, err := utils.ParseBoolean(env, false)
-	if err != nil {
-		*errs = append(*errs, err)
-		return
-	}
-	field.SetBool(envBool)
-}
-
-func setSliceString(slice *reflect.Value, envs []string, errs *[]error) {
-	for j, env := range envs {
-		slice.Index(j).SetString(env)
-	}
-}
-
-func setSliceInt(slice *reflect.Value, envs []string, errs *[]error) {
-	for j, env := range envs {
-		envInt, err := strconv.Atoi(env)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
-		slice.Index(j).SetInt(int64(envInt))
-	}
-}
-
-func setSliceFloat(slice *reflect.Value, envs []string, errs *[]error) {
-	for j, env := range envs {
-		envFloat, err := strconv.ParseFloat(env, 64)
-		if err != nil {
-			*errs = append(*errs, err)
-			return
-		}
-		slice.Index(j).SetFloat(envFloat)
-	}
+	return false
 }

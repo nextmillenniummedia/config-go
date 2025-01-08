@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/be-true/config-go/envs"
+	"github.com/be-true/config-go/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,8 +22,8 @@ func TestConfigString(t *testing.T) {
 	envGetter := envs.NewEnvsGetterMock(map[string]string{
 		"STRING_TEXT": "domain.com",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal("domain.com", config.Text)
@@ -42,8 +43,8 @@ func TestConfigBool(t *testing.T) {
 	envGetter := envs.NewEnvsGetterMock(map[string]string{
 		"BOOL_VALUE": "true",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal(true, config.Value)
@@ -71,8 +72,8 @@ func TestConfigFloat(t *testing.T) {
 		"INT_32":      "32",
 		"INT_64":      "64",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal(1, config.Int)
@@ -98,8 +99,8 @@ func TestConfigInt(t *testing.T) {
 		"FLOAT_32": "32.5",
 		"FLOAT_64": "64.5",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal(float32(32.5), config.Float32)
@@ -128,8 +129,8 @@ func TestConfigSliceInt(t *testing.T) {
 		"INT_32":      "32,32",
 		"INT_64":      "64,64",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal([]int{1, 1}, config.Int)
@@ -153,8 +154,8 @@ func TestConfigSliceString(t *testing.T) {
 	envGetter := envs.NewEnvsGetterMock(map[string]string{
 		"STRING_TEXT": "a,b",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal([]string{"a", "b"}, config.Text)
@@ -176,8 +177,8 @@ func TestConfigSliceFloat(t *testing.T) {
 		"FLOAT_32": "32.5,132.5",
 		"FLOAT_64": "64.5,164.5",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal([]float32{32.5, 132.5}, config.Float32)
@@ -198,9 +199,28 @@ func TestConfigSliceSplitter(t *testing.T) {
 	envGetter := envs.NewEnvsGetterMock(map[string]string{
 		"INT_DEFAULT": "1|2",
 	})
-	processor := envs.InitConfigEnvs(settings).SetEnvGetter(envGetter)
-	err := processor.Process(&config)
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
 
 	assert.Nil(err)
 	assert.Equal([]int{1, 2}, config.Int)
+}
+
+func TestConfigRequired(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		RequireField string `config:"require"`
+	}
+	config := Config{}
+	settings := envs.SettingEnvs{
+		Prefix: "REQUIRE",
+	}
+	envGetter := envs.NewEnvsGetterMock(map[string]string{})
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
+
+	assert.Equal(errors.ErrorConfig, err)
+	assert.Equal("", config.RequireField)
 }

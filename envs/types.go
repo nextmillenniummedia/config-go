@@ -8,3 +8,5 @@ type SettingEnvs struct {
 type IEnvGetter interface {
 	Get(name string) (value string, exist bool)
 }
+
+type ErrorsFields map[string][]error
