@@ -2,7 +2,7 @@
 
 ## TODO
 
-- Required error
+- Default value
 - tests for errors
 - Enum
 - Url formatter
