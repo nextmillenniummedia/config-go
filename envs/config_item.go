@@ -44,9 +44,9 @@ func (ci *ConfigItem) HasError() bool {
 func (ci *ConfigItem) Process() {
 	envName := ci.getEnvName()
 	env, has := ci.envGetter.Get(envName)
-	
+
 	if !has && ci.params.Required {
-		ci.appendError(errors.ErrorConfig)
+		ci.appendError(errors.ErrorRequired)
 		return
 	}
 
@@ -73,6 +73,16 @@ func (ci *ConfigItem) Process() {
 		}
 		ci.field.Set(slice)
 	}
+}
+
+func (ci ConfigItem) GetErrorsMessage() string {
+	result := ci.getEnvName() + ": "
+	errors := make([]string, 0)
+	for _, err := range ci.errs {
+		errors = append(errors, err.Error())
+	}
+	result = result + strings.Join(errors, ", ")
+	return result
 }
 
 func (ci *ConfigItem) setString(env string) {

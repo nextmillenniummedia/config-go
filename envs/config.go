@@ -63,6 +63,14 @@ func (c *ConfigEnvs) SetEnvGetter(getter IEnvGetter) *ConfigEnvs {
 	return c
 }
 
+func (c ConfigEnvs) GetErrorsMessage() string {
+	result := ""
+	for _, item := range c.items {
+		result = result + item.GetErrorsMessage() + "\n"
+	}
+	return result
+}
+
 func (c ConfigEnvs) hasErrors() bool {
 	for _, item := range c.items {
 		if item.HasError() {

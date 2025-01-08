@@ -211,7 +211,7 @@ func TestConfigRequired(t *testing.T) {
 	t.Parallel()
 
 	type Config struct {
-		RequireField string `config:"require"`
+		Field string `config:"require"`
 	}
 	config := Config{}
 	settings := envs.SettingEnvs{
@@ -220,7 +220,9 @@ func TestConfigRequired(t *testing.T) {
 	envGetter := envs.NewEnvsGetterMock(map[string]string{})
 	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
 	err := processor.Process()
+	errMessage := processor.GetErrorsMessage()
 
 	assert.Equal(errors.ErrorConfig, err)
-	assert.Equal("", config.RequireField)
+	assert.Equal("REQUIRE_FIELD: required\n", errMessage)
+	assert.Equal("", config.Field)
 }
