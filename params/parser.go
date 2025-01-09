@@ -8,7 +8,7 @@ import (
 	"github.com/nextmillenniummedia/config-go/utils"
 )
 
-var PARAMS = []string{"require", "format", "splitter", "format", "doc", "field", "default"}
+var PARAMS = []string{"require", "format", "splitter", "format", "doc", "field", "default", "enum"}
 
 func ParseParams(tag string) (*Params, error) {
 	paramsMap, err := getParamsMap(tag)
