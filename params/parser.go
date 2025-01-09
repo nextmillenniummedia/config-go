@@ -1,11 +1,14 @@
 package params
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/nextmillenniummedia/config-go/errors"
 	"github.com/nextmillenniummedia/config-go/utils"
 )
+
+var PARAMS = []string{"require", "format", "splitter", "format", "doc", "field", "default"}
 
 func ParseParams(tag string) (*Params, error) {
 	paramsMap, err := getParamsMap(tag)
@@ -34,6 +37,17 @@ func ParseParams(tag string) (*Params, error) {
 	}, nil
 }
 
+func getRequireValue(params map[string]string) string {
+	requireValue, has := params["require"]
+	if has && requireValue == "" {
+		requireValue = "true"
+	}
+	if !has {
+		requireValue = "false"
+	}
+	return requireValue
+}
+
 func getParamsMap(tag string) (map[string]string, error) {
 	result := make(map[string]string)
 	params := strings.Split(tag, ",")
@@ -47,18 +61,13 @@ func getParamsMap(tag string) (map[string]string, error) {
 			value = split[1]
 		}
 		name := split[0]
+		if name == "" {
+			continue
+		}
 		result[name] = utils.TrimEscape(value)
+		if !slices.Contains(PARAMS, name) {
+			return nil, errors.ErrorParseNotAllowed
+		}
 	}
 	return result, nil
-}
-
-func getRequireValue(params map[string]string) string {
-	requireValue, has := params["require"]
-	if has && requireValue == "" {
-		requireValue = "true"
-	}
-	if !has {
-		requireValue = "false"
-	}
-	return requireValue
 }

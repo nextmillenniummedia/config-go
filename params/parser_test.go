@@ -127,3 +127,17 @@ func TestParseDefault(t *testing.T) {
 		assert.Nil(err, test)
 	}
 }
+
+func TestParseAllowedParams(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	tests := []TestItem{
+		{"iw=1,doc='Test'", Params{}, errors.ErrorParseNotAllowed},
+	}
+
+	for _, test := range tests {
+		_, err := ParseParams(test.value)
+		assert.NotNil(err, test)
+	}
+}
