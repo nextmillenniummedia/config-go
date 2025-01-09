@@ -2,11 +2,17 @@
 
 ## TODO
 
-- Default value
+- default value
 - tests for errors
-- Enum
-- Url formatter
-- Formatter and type matching
+- enum
+- url formatter
+- formatter and type matching
+
+### Install
+
+```bash
+go get github.com/nextmillenniummedia/config-go
+```
 
 ## Example of usage
 

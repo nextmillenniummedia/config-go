@@ -1,4 +1,4 @@
-package envs
+package configgo
 
 import (
 	"fmt"
@@ -11,18 +11,24 @@ import (
 	"github.com/be-true/config-go/utils"
 )
 
-type ConfigItem struct {
+type configItem struct {
 	field     *reflect.Value
 	fieldName string
 	fieldType *reflect.StructField
 	params    *params.Params
 	prefix    string
-	envGetter IEnvGetter
+	env       IEnv
 	errs      []error
 }
 
-func NewConfigItem(field *reflect.Value, fieldName string, fieldType *reflect.StructField, params *params.Params, prefix string) *ConfigItem {
-	return &ConfigItem{
+func newConfigItem(
+	field *reflect.Value,
+	fieldName string,
+	fieldType *reflect.StructField,
+	params *params.Params,
+	prefix string,
+) *configItem {
+	return &configItem{
 		field:     field,
 		fieldName: fieldName,
 		fieldType: fieldType,
@@ -32,20 +38,20 @@ func NewConfigItem(field *reflect.Value, fieldName string, fieldType *reflect.St
 	}
 }
 
-func (ci *ConfigItem) SetEnvGetter(getter IEnvGetter) *ConfigItem {
-	ci.envGetter = getter
+func (ci *configItem) SetEnv(env IEnv) *configItem {
+	ci.env = env
 	return ci
 }
 
-func (ci *ConfigItem) HasError() bool {
+func (ci *configItem) HasError() bool {
 	return len(ci.errs) > 0
 }
 
-func (ci *ConfigItem) Process() {
+func (ci *configItem) Process() {
 	ci.clear()
 
 	envName := ci.getEnvName()
-	env, has := ci.envGetter.Get(envName)
+	env, has := ci.env.Get(envName)
 
 	if !has && ci.params.Required {
 		ci.appendError(errors.ErrorRequired)
@@ -77,7 +83,7 @@ func (ci *ConfigItem) Process() {
 	}
 }
 
-func (ci ConfigItem) GetErrorsMessage() string {
+func (ci configItem) GetErrorsMessage() string {
 	result := ci.getEnvName() + ": "
 	errors := make([]string, 0)
 	for _, err := range ci.errs {
@@ -87,15 +93,15 @@ func (ci ConfigItem) GetErrorsMessage() string {
 	return result
 }
 
-func (ci *ConfigItem) clear() {
+func (ci *configItem) clear() {
 	ci.errs = []error{}
 }
 
-func (ci *ConfigItem) setString(env string) {
+func (ci *configItem) setString(env string) {
 	ci.field.SetString(env)
 }
 
-func (ci *ConfigItem) setInt(env string) {
+func (ci *configItem) setInt(env string) {
 	envInt, err := strconv.Atoi(env)
 	if err != nil {
 		ci.appendError(err)
@@ -104,7 +110,7 @@ func (ci *ConfigItem) setInt(env string) {
 	ci.field.SetInt(int64(envInt))
 }
 
-func (ci *ConfigItem) setFloat(env string) {
+func (ci *configItem) setFloat(env string) {
 	envFloat, err := strconv.ParseFloat(env, 64)
 	if err != nil {
 		ci.appendError(err)
@@ -113,7 +119,7 @@ func (ci *ConfigItem) setFloat(env string) {
 	ci.field.SetFloat(envFloat)
 }
 
-func (ci *ConfigItem) setBool(env string) {
+func (ci *configItem) setBool(env string) {
 	envBool, err := utils.ParseBoolean(env, false)
 	if err != nil {
 		ci.appendError(err)
@@ -122,13 +128,13 @@ func (ci *ConfigItem) setBool(env string) {
 	ci.field.SetBool(envBool)
 }
 
-func (ci *ConfigItem) setSliceString(slice *reflect.Value, envs []string) {
+func (ci *configItem) setSliceString(slice *reflect.Value, envs []string) {
 	for j, env := range envs {
 		slice.Index(j).SetString(env)
 	}
 }
 
-func (ci *ConfigItem) setSliceInt(slice *reflect.Value, envs []string) {
+func (ci *configItem) setSliceInt(slice *reflect.Value, envs []string) {
 	for j, env := range envs {
 		envInt, err := strconv.Atoi(env)
 		if err != nil {
@@ -139,7 +145,7 @@ func (ci *ConfigItem) setSliceInt(slice *reflect.Value, envs []string) {
 	}
 }
 
-func (ci *ConfigItem) setSliceFloat(slice *reflect.Value, envs []string) {
+func (ci *configItem) setSliceFloat(slice *reflect.Value, envs []string) {
 	for j, env := range envs {
 		envFloat, err := strconv.ParseFloat(env, 64)
 		if err != nil {
@@ -150,7 +156,7 @@ func (ci *ConfigItem) setSliceFloat(slice *reflect.Value, envs []string) {
 	}
 }
 
-func (ci *ConfigItem) getEnvName() string {
+func (ci *configItem) getEnvName() string {
 	fieldName := ci.fieldName
 	if len(ci.params.Field) > 0 {
 		fieldName = ci.params.Field
@@ -159,6 +165,6 @@ func (ci *ConfigItem) getEnvName() string {
 	return fmt.Sprintf("%s_%s", ci.prefix, fieldName)
 }
 
-func (ci *ConfigItem) appendError(err error) {
+func (ci *configItem) appendError(err error) {
 	ci.errs = append(ci.errs, err)
 }
