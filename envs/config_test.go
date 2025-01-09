@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/be-true/config-go/envs"
-	"github.com/be-true/config-go/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -215,14 +214,32 @@ func TestConfigRequired(t *testing.T) {
 	}
 	config := Config{}
 	settings := envs.SettingEnvs{
+		Title:  "Any config",
 		Prefix: "REQUIRE",
 	}
 	envGetter := envs.NewEnvsGetterMock(map[string]string{})
 	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
 	err := processor.Process()
-	errMessage := processor.GetErrorsMessage()
 
-	assert.Equal(errors.ErrorConfig, err)
-	assert.Equal("REQUIRE_FIELD: required\n", errMessage)
+	assert.Equal("Any config\nREQUIRE_FIELD: required\n", err.Error())
+	assert.Equal("", config.Field)
+}
+
+func TestConfigRequiredWithoutTitle(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Field string `config:"require"`
+	}
+	config := Config{}
+	settings := envs.SettingEnvs{
+		Prefix: "REQUIRE",
+	}
+	envGetter := envs.NewEnvsGetterMock(map[string]string{})
+	processor := envs.InitConfigEnvs(&config, settings).SetEnvGetter(envGetter)
+	err := processor.Process()
+
+	assert.Equal("REQUIRE_FIELD: required\n", err.Error())
 	assert.Equal("", config.Field)
 }

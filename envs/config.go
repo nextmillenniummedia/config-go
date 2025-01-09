@@ -1,9 +1,9 @@
 package envs
 
 import (
+	"fmt"
 	"reflect"
 
-	"github.com/be-true/config-go/errors"
 	"github.com/be-true/config-go/params"
 )
 
@@ -51,7 +51,7 @@ func (c *ConfigEnvs) Process() (err error) {
 		item.Process()
 	}
 	if c.hasErrors() {
-		return errors.ErrorConfig
+		return fmt.Errorf("%s", c.GetErrorsMessage())
 	}
 	return nil
 }
@@ -65,6 +65,9 @@ func (c *ConfigEnvs) SetEnvGetter(getter IEnvGetter) *ConfigEnvs {
 
 func (c ConfigEnvs) GetErrorsMessage() string {
 	result := ""
+	if len(c.settings.Title) > 0 {
+		result = result + c.settings.Title + "\n"
+	}
 	for _, item := range c.items {
 		result = result + item.GetErrorsMessage() + "\n"
 	}
