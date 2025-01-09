@@ -1,4 +1,4 @@
-module github.com/be-true/config-go
+module github.com/nextmillenniummedia/config-go
 
 go 1.22.3
 
