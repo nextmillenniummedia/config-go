@@ -3,8 +3,8 @@ package params
 import (
 	"strings"
 
-	"github.com/be-true/config-go/errors"
-	"github.com/be-true/config-go/utils"
+	"github.com/nextmillenniummedia/config-go/errors"
+	"github.com/nextmillenniummedia/config-go/utils"
 )
 
 func ParseParams(tag string) (*Params, error) {

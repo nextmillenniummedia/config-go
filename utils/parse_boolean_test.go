@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/be-true/config-go/errors"
+	"github.com/nextmillenniummedia/config-go/errors"
 	"github.com/stretchr/testify/assert"
 )
 

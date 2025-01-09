@@ -3,7 +3,7 @@ package utils
 import (
 	"strings"
 
-	"github.com/be-true/config-go/errors"
+	"github.com/nextmillenniummedia/config-go/errors"
 )
 
 func ParseBoolean(value string, emptyValue bool) (bool, error) {

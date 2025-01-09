@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/be-true/config-go/errors"
-	"github.com/be-true/config-go/params"
-	"github.com/be-true/config-go/utils"
+	"github.com/nextmillenniummedia/config-go/errors"
+	"github.com/nextmillenniummedia/config-go/params"
+	"github.com/nextmillenniummedia/config-go/utils"
 )
 
 type configItem struct {

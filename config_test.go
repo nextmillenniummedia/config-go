@@ -3,7 +3,7 @@ package configgo_test
 import (
 	"testing"
 
-	. "github.com/be-true/config-go"
+	. "github.com/nextmillenniummedia/config-go"
 	"github.com/stretchr/testify/assert"
 )
 

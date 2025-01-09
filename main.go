@@ -3,7 +3,7 @@ package configgo
 import (
 	"reflect"
 
-	"github.com/be-true/config-go/params"
+	"github.com/nextmillenniummedia/config-go/params"
 )
 
 func InitConfig(config any, settings Setting) *Config {
