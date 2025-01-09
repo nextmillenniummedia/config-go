@@ -112,3 +112,18 @@ func TestParseSplitter(t *testing.T) {
 		assert.Nil(err, test)
 	}
 }
+
+func TestParseDefault(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	tests := []TestItem{
+		{"default=1", Params{Default: "1"}, nil},
+	}
+
+	for _, test := range tests {
+		params, err := ParseParams(test.value)
+		assert.Equal(test.params.Default, params.Default, test)
+		assert.Nil(err, test)
+	}
+}

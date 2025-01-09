@@ -55,9 +55,13 @@ func (ci *configItem) Process() {
 	ci.clear()
 
 	envName := ci.getEnvName()
-	env, has := ci.env.Get(envName)
+	env, _ := ci.env.Get(envName)
 
-	if !has || env == "" {
+	if env == "" && ci.params.Default != "" {
+		env = ci.params.Default
+	}
+
+	if env == "" {
 		if ci.params.Require {
 			ci.appendError(errors.ErrorRequired)
 		}

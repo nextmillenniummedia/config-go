@@ -104,6 +104,29 @@ func TestConfigIntEmpty(t *testing.T) {
 	assert.Equal(0, config.Int)
 }
 
+func TestConfigIntDefault(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		A int `config:"default=1"`
+		B int `config:"default=2"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "INT",
+	}
+	env := newEnvsMock(map[string]string{
+		"INT_A": "",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.Nil(err)
+	assert.Equal(1, config.A)
+	assert.Equal(2, config.B)
+}
+
 func TestConfigFloat(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()

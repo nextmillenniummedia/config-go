@@ -23,11 +23,13 @@ func ParseParams(tag string) (*Params, error) {
 	format := strings.ToLower(paramsMap["format"])
 	doc := paramsMap["doc"]
 	field := paramsMap["field"]
+	defaultValue := paramsMap["default"]
 	return &Params{
 		Field:    field,
 		Splitter: splitter,
 		Require:  require,
 		Format:   format,
+		Default:  defaultValue,
 		Doc:      doc,
 	}, nil
 }

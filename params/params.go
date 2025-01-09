@@ -11,6 +11,8 @@ type Params struct {
 	Splitter string
 	// Format for field
 	Format string
+	// default value
+	Default string
 	// Field is required or not
 	Require bool
 	// List for enum
