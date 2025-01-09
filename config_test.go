@@ -50,7 +50,7 @@ func TestConfigBool(t *testing.T) {
 	assert.Equal(true, config.Value)
 }
 
-func TestConfigFloat(t *testing.T) {
+func TestConfigInt(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()
 
@@ -83,7 +83,28 @@ func TestConfigFloat(t *testing.T) {
 	assert.Equal(int64(64), config.Int64)
 }
 
-func TestConfigInt(t *testing.T) {
+func TestConfigIntEmpty(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Int int `config:"field=default"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "INT",
+	}
+	env := newEnvsMock(map[string]string{
+		"INT_DEFAULT": "",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.Nil(err)
+	assert.Equal(0, config.Int)
+}
+
+func TestConfigFloat(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()
 
