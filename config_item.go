@@ -3,13 +3,17 @@ package configgo
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/nextmillenniummedia/config-go/errors"
 	"github.com/nextmillenniummedia/config-go/params"
 	"github.com/nextmillenniummedia/config-go/utils"
 )
+
+var duration = reflect.TypeOf(time.Duration(0))
 
 type configItem struct {
 	field     *reflect.Value
@@ -106,6 +110,10 @@ func (ci *configItem) setInt(env string) {
 	if err != nil {
 		ci.appendError(err)
 		return
+	}
+	if slices.Contains(utils.TIME_SHORTS, ci.params.Format) {
+		timeUnit := utils.SHORT_TIME[ci.params.Format]
+		envInt = timeUnit * envInt
 	}
 	ci.field.SetInt(int64(envInt))
 }

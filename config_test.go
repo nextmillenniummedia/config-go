@@ -2,6 +2,7 @@ package configgo_test
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/nextmillenniummedia/config-go"
 	"github.com/stretchr/testify/assert"
@@ -104,6 +105,27 @@ func TestConfigInt(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(float32(32.5), config.Float32)
 	assert.Equal(float64(64.5), config.Float64)
+}
+
+func TestConfigTimeDuration(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Duration time.Duration `config:"field=duration_ms,format=ms"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "TIME",
+	}
+	env := newEnvsMock(map[string]string{
+		"TIME_DURATION_MS": "1000",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.Nil(err)
+	assert.Equal(time.Duration(time.Millisecond*1000), config.Duration)
 }
 
 func TestConfigSliceInt(t *testing.T) {

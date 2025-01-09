@@ -1,18 +1,27 @@
 # Config system for go lang apps
 
-## TODO
-
-- default value
-- tests for errors
-- enum
-- url formatter
-- formatter and type matching
-
 ### Install
 
 ```bash
 go get github.com/nextmillenniummedia/config-go
 ```
+
+## Allowed types
+
+- `int`, `[]int`
+- `string`, `[]string`
+- `float`, `[]int`
+- `bool`
+- `time.Duration` with format: `ns`, `us`, `ms`, `s`, `m`, `h` 
+
+## Allowed params in config notation
+
+- `require` - This field is required
+- `field` - Field name for env
+- `splitter` - The char used to split the env value 
+- `enum` - Enum of allowed value
+- `format` - Format of value for other types
+- `doc` - Addition info for errors or documentation
 
 ## Example of usage
 
@@ -20,9 +29,9 @@ go get github.com/nextmillenniummedia/config-go
 ```go
 type Config struct {
 	Env      string   `config:"enum=local|dev|qa|stage|prod"`
-	Port     int      `config:"format=port,default=3000"`
+	Port     int      `config:"default=3000"`
 	Hosts    []string `config:"format=url,require,splitter=|,doc='You doc info'"`
-	Enabled  bool     `config:"format=boolean,default=true"`
+	Enabled  bool     `config:"default=true"`
 }
 ```
 
@@ -68,3 +77,12 @@ if err != nil {
 |----------|-------------------|--------|--------------|------------------------------|
 | required | APPLICATION_HOSTS | url    | You doc info | domain1:port1\|domain2:port2 |
 ```
+
+## TODO
+
+- pointer
+- default value
+- tests for errors
+- enum
+- url formatter
+- formatter and type matching
