@@ -81,6 +81,7 @@ if err != nil {
 ## TODO
 
 - pointer
+- CamelToUnderscore converter for name fields
 - default value
 - tests for errors
 - enum
