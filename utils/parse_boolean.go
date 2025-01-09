@@ -6,11 +6,9 @@ import (
 	"github.com/nextmillenniummedia/config-go/errors"
 )
 
-func ParseBoolean(value string, emptyValue bool) (bool, error) {
+func ParseBoolean(value string) (bool, error) {
 	value = strings.ToLower(value)
 	switch value {
-	case "":
-		return emptyValue, nil
 	case "false", "f", "0":
 		return false, nil
 	case "true", "t", "1":

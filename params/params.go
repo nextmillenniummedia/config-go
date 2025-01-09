@@ -12,7 +12,7 @@ type Params struct {
 	// Format for field
 	Format string
 	// Field is required or not
-	Required bool
+	Require bool
 	// List for enum
 	Enum []string
 	// Documentation

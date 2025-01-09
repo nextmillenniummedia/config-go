@@ -12,7 +12,7 @@ func ParseParams(tag string) (*Params, error) {
 	if err != nil {
 		return nil, err
 	}
-	required, err := utils.ParseBoolean(paramsMap["required"], true)
+	require, err := utils.ParseBoolean(getRequireValue(paramsMap))
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func ParseParams(tag string) (*Params, error) {
 	return &Params{
 		Field:    field,
 		Splitter: splitter,
-		Required: required,
+		Require:  require,
 		Format:   format,
 		Doc:      doc,
 	}, nil
@@ -48,4 +48,15 @@ func getParamsMap(tag string) (map[string]string, error) {
 		result[name] = utils.TrimEscape(value)
 	}
 	return result, nil
+}
+
+func getRequireValue(params map[string]string) string {
+	requireValue, has := params["require"]
+	if has && requireValue == "" {
+		requireValue = "true"
+	}
+	if !has {
+		requireValue = "false"
+	}
+	return requireValue
 }

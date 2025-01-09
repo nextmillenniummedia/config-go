@@ -81,6 +81,7 @@ if err != nil {
 ## TODO
 
 - pointer
+- validate allowed params in tag 
 - CamelToUnderscore converter for name fields
 - default value
 - tests for errors

@@ -43,6 +43,10 @@ func (c Config) GetErrorsMessage() string {
 		result = result + c.settings.Title + "\n"
 	}
 	for _, item := range c.items {
+		err := item.GetErrorsMessage()
+		if err == "" {
+			continue
+		}
 		result = result + item.GetErrorsMessage() + "\n"
 	}
 	return result

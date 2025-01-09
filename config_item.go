@@ -57,7 +57,7 @@ func (ci *configItem) Process() {
 	envName := ci.getEnvName()
 	env, has := ci.env.Get(envName)
 
-	if !has && ci.params.Required {
+	if !has && ci.params.Require {
 		ci.appendError(errors.ErrorRequired)
 		return
 	}
@@ -88,6 +88,9 @@ func (ci *configItem) Process() {
 }
 
 func (ci configItem) GetErrorsMessage() string {
+	if !ci.HasError() {
+		return ""
+	}
 	result := ci.getEnvName() + ": "
 	errors := make([]string, 0)
 	for _, err := range ci.errs {
@@ -128,7 +131,7 @@ func (ci *configItem) setFloat(env string) {
 }
 
 func (ci *configItem) setBool(env string) {
-	envBool, err := utils.ParseBoolean(env, false)
+	envBool, err := utils.ParseBoolean(env)
 	if err != nil {
 		ci.appendError(err)
 		return

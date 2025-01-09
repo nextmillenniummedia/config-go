@@ -252,7 +252,8 @@ func TestConfigRequiredWithoutTitle(t *testing.T) {
 	t.Parallel()
 
 	type Config struct {
-		Field string `config:"require"`
+		A string `config:"require"`
+		B string `config:""`
 	}
 	config := Config{}
 	settings := Setting{
@@ -262,8 +263,8 @@ func TestConfigRequiredWithoutTitle(t *testing.T) {
 	processor := InitConfig(&config, settings).SetEnv(env)
 	err := processor.Process()
 
-	assert.Equal("REQUIRE_FIELD: required\n", err.Error())
-	assert.Equal("", config.Field)
+	assert.Equal("REQUIRE_A: required\n", err.Error())
+	assert.Equal("", config.A)
 }
 
 func newEnvsMock(values map[string]string) IEnv {

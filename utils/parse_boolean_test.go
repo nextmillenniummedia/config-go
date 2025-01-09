@@ -17,7 +17,6 @@ func TestParseBoolean(t *testing.T) {
 	t.Parallel()
 
 	tests := []TestItem{
-		{"", false},
 		{"0", false},
 		{"1", true},
 		{"false", false},
@@ -29,7 +28,7 @@ func TestParseBoolean(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result, err := ParseBoolean(test.value, false)
+		result, err := ParseBoolean(test.value)
 		assert.Equal(test.result, result, test)
 		assert.Equal(nil, err, test)
 	}
@@ -38,14 +37,14 @@ func TestParseBoolean(t *testing.T) {
 func TestParseBooleanEmptyValueAsTrue(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()
-	result, err := ParseBoolean("", true)
-	assert.Equal(true, result)
-	assert.Nil(err)
+	result, err := ParseBoolean("")
+	assert.Equal(false, result)
+	assert.Equal(errors.ErrorParseBoolean, err)
 }
 
 func TestOnError(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()
-	_, err := ParseBoolean("any text", false)
+	_, err := ParseBoolean("any text")
 	assert.Equal(errors.ErrorParseBoolean, err)
 }
