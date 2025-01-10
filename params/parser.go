@@ -8,7 +8,7 @@ import (
 	"github.com/nextmillenniummedia/config-go/utils"
 )
 
-var PARAMS = []string{"require", "format", "splitter", "format", "doc", "field", "default", "enum"}
+var PARAMS = []string{"required", "format", "splitter", "format", "doc", "field", "default", "enum"}
 
 func ParseParams(tag string) (*Params, error) {
 	paramsMap, err := getParamsMap(tag)
@@ -30,7 +30,7 @@ func ParseParams(tag string) (*Params, error) {
 	return &Params{
 		Field:    field,
 		Splitter: splitter,
-		Require:  require,
+		Required: require,
 		Format:   format,
 		Default:  defaultValue,
 		Doc:      doc,
@@ -38,7 +38,7 @@ func ParseParams(tag string) (*Params, error) {
 }
 
 func getRequireValue(params map[string]string) string {
-	requireValue, has := params["require"]
+	requireValue, has := params["required"]
 	if has && requireValue == "" {
 		requireValue = "true"
 	}

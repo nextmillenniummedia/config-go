@@ -14,7 +14,7 @@ type Params struct {
 	// default value
 	Default string
 	// Field is required or not
-	Require bool
+	Required bool
 	// List for enum
 	Enum []string
 	// Documentation

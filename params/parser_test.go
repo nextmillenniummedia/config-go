@@ -18,15 +18,15 @@ func TestParseRequired(t *testing.T) {
 	t.Parallel()
 
 	tests := []TestItem{
-		{"require", Params{Require: true}, nil},
-		{"require=1", Params{Require: true}, nil},
-		{"require=0", Params{Require: false}, nil},
-		{"require,doc='Any doc text'", Params{Require: true}, nil},
+		{"required", Params{Required: true}, nil},
+		{"required=1", Params{Required: true}, nil},
+		{"required=0", Params{Required: false}, nil},
+		{"required,doc='Any doc text'", Params{Required: true}, nil},
 	}
 
 	for _, test := range tests {
 		params, err := ParseParams(test.value)
-		assert.Equal(test.params.Require, params.Require, test)
+		assert.Equal(test.params.Required, params.Required, test)
 		assert.Nil(err, test)
 	}
 }
@@ -36,7 +36,7 @@ func TestParseRequiredErrors(t *testing.T) {
 	t.Parallel()
 
 	tests := []TestItem{
-		{"require=a", Params{Require: false}, errors.ErrorParseBoolean},
+		{"required=a", Params{Required: false}, errors.ErrorParseBoolean},
 	}
 
 	for _, test := range tests {

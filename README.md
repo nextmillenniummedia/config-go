@@ -16,7 +16,7 @@ go get github.com/nextmillenniummedia/config-go
 
 ## Allowed params in config notation
 
-- `require` - This field is required
+- `required` - This field is required
 - `field` - Field name for env
 - `splitter` - The char used to split the env value 
 - `enum` - Enum of allowed value
@@ -30,7 +30,7 @@ go get github.com/nextmillenniummedia/config-go
 type Config struct {
 	Env      string   `config:"enum=local|dev|qa|stage|prod"`
 	Port     int      `config:"default=3000"`
-	Hosts    []string `config:"format=url,require,splitter=|,doc='You doc info'"`
+	Hosts    []string `config:"format=url,required,splitter=|,doc='You doc info'"`
 	Enabled  bool     `config:"default=true"`
 }
 ```

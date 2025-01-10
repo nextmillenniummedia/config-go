@@ -62,7 +62,7 @@ func (ci *configItem) Process() {
 	}
 
 	if env == "" {
-		if ci.params.Require {
+		if ci.params.Required {
 			ci.appendError(errors.ErrorRequired)
 		}
 		return

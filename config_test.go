@@ -13,7 +13,7 @@ func TestConfigString(t *testing.T) {
 	t.Parallel()
 
 	type Config struct {
-		Text string `config:"format=url,require"`
+		Text string `config:"format=url"`
 	}
 	config := Config{}
 	settings := Setting{
@@ -276,18 +276,18 @@ func TestConfigRequired(t *testing.T) {
 	t.Parallel()
 
 	type Config struct {
-		Field string `config:"require"`
+		Field string `config:"required"`
 	}
 	config := Config{}
 	settings := Setting{
 		Title:  "Any config",
-		Prefix: "REQUIRE",
+		Prefix: "REQUIRED",
 	}
 	env := newEnvsMock(map[string]string{})
 	processor := InitConfig(&config, settings).SetEnv(env)
 	err := processor.Process()
 
-	assert.Equal("Any config\nREQUIRE_FIELD: required\n", err.Error())
+	assert.Equal("Any config\nREQUIRED_FIELD: required\n", err.Error())
 	assert.Equal("", config.Field)
 }
 
@@ -296,18 +296,18 @@ func TestConfigRequiredWithoutTitle(t *testing.T) {
 	t.Parallel()
 
 	type Config struct {
-		A string `config:"require"`
+		A string `config:"required"`
 		B string `config:""`
 	}
 	config := Config{}
 	settings := Setting{
-		Prefix: "REQUIRE",
+		Prefix: "REQUIRED",
 	}
 	env := newEnvsMock(map[string]string{})
 	processor := InitConfig(&config, settings).SetEnv(env)
 	err := processor.Process()
 
-	assert.Equal("REQUIRE_A: required\n", err.Error())
+	assert.Equal("REQUIRED_A: required\n", err.Error())
 	assert.Equal("", config.A)
 }
 
