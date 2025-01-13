@@ -80,6 +80,7 @@ if err != nil {
 
 ## TODO
 
+- uint support
 - pointer
 - CamelToUnderscore converter for name fields
 - default value
