@@ -83,6 +83,39 @@ func TestConfigInt(t *testing.T) {
 	assert.Equal(int64(64), config.Int64)
 }
 
+func TestConfigUint(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Uint   uint   `config:"field=default"`
+		Uint8  uint8  `config:"field=8"`
+		Uint16 uint16 `config:"field=16"`
+		Uint32 uint32 `config:"field=32"`
+		Uint64 uint64 `config:"field=64"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "UINT",
+	}
+	env := newEnvsMock(map[string]string{
+		"UINT_DEFAULT": "1",
+		"UINT_8":       "8",
+		"UINT_16":      "16",
+		"UINT_32":      "32",
+		"UINT_64":      "64",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.Nil(err)
+	assert.Equal(uint(1), config.Uint)
+	assert.Equal(uint8(8), config.Uint8)
+	assert.Equal(uint16(16), config.Uint16)
+	assert.Equal(uint32(32), config.Uint32)
+	assert.Equal(uint64(64), config.Uint64)
+}
+
 func TestConfigIntEmpty(t *testing.T) {
 	assert := assert.New(t)
 	t.Parallel()
@@ -203,6 +236,81 @@ func TestConfigSliceInt(t *testing.T) {
 	assert.Equal([]int16{16, 16}, config.Int16)
 	assert.Equal([]int32{32, 32}, config.Int32)
 	assert.Equal([]int64{64, 64}, config.Int64)
+}
+
+func TestConfigSliceUint(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Uint   []uint   `config:"field=default"`
+		Uint8  []uint8  `config:"field=8"`
+		Uint16 []uint16 `config:"field=16"`
+		Uint32 []uint32 `config:"field=32"`
+		Uint64 []uint64 `config:"field=64"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "UINT",
+	}
+	env := newEnvsMock(map[string]string{
+		"UINT_DEFAULT": "1,1",
+		"UINT_8":       "8,8",
+		"UINT_16":      "16,16",
+		"UINT_32":      "32,32",
+		"UINT_64":      "64,64",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.Nil(err)
+	assert.Equal([]uint{1, 1}, config.Uint)
+	assert.Equal([]uint8{8, 8}, config.Uint8)
+	assert.Equal([]uint16{16, 16}, config.Uint16)
+	assert.Equal([]uint32{32, 32}, config.Uint32)
+	assert.Equal([]uint64{64, 64}, config.Uint64)
+}
+
+func TestConfigUintNegativeError(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Uint8 uint8 `config:"field=8"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "UINT",
+	}
+	env := newEnvsMock(map[string]string{
+		"UINT_8": "-8",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.NotNil(err)
+	assert.Equal("UINT_8: uint should be positive\n", err.Error())
+}
+
+func TestConfigSliceUintNegativeError(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Uint8 []uint8 `config:"field=8"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "UINT",
+	}
+	env := newEnvsMock(map[string]string{
+		"UINT_8": "8,-8",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.NotNil(err)
+	assert.Equal("UINT_8: uint should be positive\n", err.Error())
 }
 
 func TestConfigSliceString(t *testing.T) {

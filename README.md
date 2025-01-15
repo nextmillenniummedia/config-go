@@ -9,6 +9,7 @@ go get github.com/nextmillenniummedia/config-go
 ## Allowed types
 
 - `int`, `[]int`
+- `uint`, `[]uint`
 - `string`, `[]string`
 - `float`, `[]int`
 - `bool`
@@ -80,7 +81,6 @@ if err != nil {
 
 ## TODO
 
-- uint support
 - pointer
 - CamelToUnderscore converter for name fields
 - default value

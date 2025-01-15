@@ -73,6 +73,8 @@ func (ci *configItem) Process() {
 		ci.setString(env)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		ci.setInt(env)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		ci.setUint(env)
 	case reflect.Float32, reflect.Float64:
 		ci.setFloat(env)
 	case reflect.Bool:
@@ -86,6 +88,8 @@ func (ci *configItem) Process() {
 			ci.setSliceString(&slice, envs)
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			ci.setSliceInt(&slice, envs)
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			ci.setSliceUint(&slice, envs)
 		case reflect.Float32, reflect.Float64:
 			ci.setSliceFloat(&slice, envs)
 		}
@@ -127,6 +131,18 @@ func (ci *configItem) setInt(env string) {
 	ci.field.SetInt(int64(envInt))
 }
 
+func (ci *configItem) setUint(env string) {
+	envInt, err := strconv.Atoi(env)
+	if err != nil {
+		ci.appendError(err)
+		return
+	}
+	if envInt < 0 {
+		ci.appendError(errors.ErrorUintShouldBePositive)
+	}
+	ci.field.SetUint(uint64(envInt))
+}
+
 func (ci *configItem) setFloat(env string) {
 	envFloat, err := strconv.ParseFloat(env, 64)
 	if err != nil {
@@ -159,6 +175,20 @@ func (ci *configItem) setSliceInt(slice *reflect.Value, envs []string) {
 			return
 		}
 		slice.Index(j).SetInt(int64(envInt))
+	}
+}
+
+func (ci *configItem) setSliceUint(slice *reflect.Value, envs []string) {
+	for j, env := range envs {
+		envInt, err := strconv.Atoi(env)
+		if err != nil {
+			ci.appendError(err)
+			return
+		}
+		if envInt < 0 {
+			ci.appendError(errors.ErrorUintShouldBePositive)
+		}
+		slice.Index(j).SetUint(uint64(envInt))
 	}
 }
 
