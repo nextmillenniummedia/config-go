@@ -10,7 +10,7 @@ go get github.com/nextmillenniummedia/config-go
 
 - `int`, `[]int`
 - `uint`, `[]uint`
-- `string`, `[]string`
+- `string`, `[]string` with format: `url`
 - `float`, `[]int`
 - `bool`
 - `time.Duration` with format: `ns`, `us`, `ms`, `s`, `m`, `h` 
@@ -50,7 +50,7 @@ In system has variables:
 ```bash
 APPLICATION_ENV=prod
 APPLICATION_PORT=3000
-APPLICATION_HOSTS=domain1.com:5555|domain2.com:5555
+APPLICATION_HOSTS=http://domain1.com:5555/|http://domain2.com:5555
 APPLICATION_ENABLED=true
 ```
 
@@ -59,7 +59,7 @@ APPLICATION_ENABLED=true
 Config{
     Env: "prod",
     Port: 3000,
-    Hosts: []{"domain1.com:5555", "domain2.com:5555"},
+    Hosts: []{"http://domain1.com:5555", "http://domain2.com:5555"},
     Enabled: true,
 }
 ```
@@ -74,17 +74,17 @@ if err != nil {
 
 - Errors will printed in terminal as md table
 ```bash
-| error    | env               | format | doc          | example                      |
-|----------|-------------------|--------|--------------|------------------------------|
-| required | APPLICATION_HOSTS | url    | You doc info | domain1:port1\|domain2:port2 |
+| error    | env               | format | doc          | example                                    |
+|----------|-------------------|--------|--------------|--------------------------------------------|
+| required | APPLICATION_HOSTS | url    | You doc info | http://domain1:port1|http://domain2:port2  |
 ```
 
 ## TODO
 
+- ip format
 - pointer
 - CamelToUnderscore converter for name fields
 - default value
 - tests for errors
 - enum
-- url formatter
 - formatter and type matching

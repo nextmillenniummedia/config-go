@@ -419,6 +419,72 @@ func TestConfigRequiredWithoutTitle(t *testing.T) {
 	assert.Equal("", config.A)
 }
 
+func TestFormatUrlSuccess(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Host  string   `config:"format=url"`
+		Hosts []string `config:"format=url"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "URL",
+	}
+	env := newEnvsMock(map[string]string{
+		"URL_HOST":  "https://domain.com/",
+		"URL_HOSTS": "https://domain1.com/,https://domain2.com",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.Nil(err)
+	assert.Equal("https://domain.com", config.Host)
+	assert.Equal([]string{"https://domain1.com", "https://domain2.com"}, config.Hosts)
+}
+
+func TestFormatUrlError(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Host string `config:"format=url"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "URL",
+	}
+	env := newEnvsMock(map[string]string{
+		"URL_HOST": "domain.com/",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.NotNil(err)
+	assert.Equal("URL_HOST: parse \"domain.com/\": invalid URI for request\n", err.Error())
+}
+
+func TestFormatUrlErrorSlice(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Hosts []string `config:"format=url"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "URL",
+	}
+	env := newEnvsMock(map[string]string{
+		"URL_HOSTS": "domain1.com/,https://domain2.com",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.NotNil(err)
+	assert.Equal("URL_HOSTS: parse \"domain1.com/\": invalid URI for request\n", err.Error())
+}
+
 func newEnvsMock(values map[string]string) IEnv {
 	return &envsMock{values}
 }

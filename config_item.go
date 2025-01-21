@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nextmillenniummedia/config-go/consts"
 	"github.com/nextmillenniummedia/config-go/errors"
 	"github.com/nextmillenniummedia/config-go/params"
 	"github.com/nextmillenniummedia/config-go/utils"
@@ -115,6 +116,13 @@ func (ci *configItem) clear() {
 }
 
 func (ci *configItem) setString(env string) {
+	if ci.params.Format == consts.FORMAT_URL {
+		if err := utils.UrlValidate(env); err != nil {
+			ci.appendError(err)
+			return
+		}
+		env = utils.UrlClearLastSlash(env)
+	}
 	ci.field.SetString(env)
 }
 
@@ -163,6 +171,13 @@ func (ci *configItem) setBool(env string) {
 
 func (ci *configItem) setSliceString(slice *reflect.Value, envs []string) {
 	for j, env := range envs {
+		if ci.params.Format == consts.FORMAT_URL {
+			if err := utils.UrlValidate(env); err != nil {
+				ci.appendError(err)
+				return
+			}
+			env = utils.UrlClearLastSlash(env)
+		}
 		slice.Index(j).SetString(env)
 	}
 }
