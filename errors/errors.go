@@ -8,4 +8,6 @@ var (
 	ErrorParseNotAllowed      = errors.New("not allowed param")
 	ErrorEmptyParams          = errors.New("empty params")
 	ErrorUintShouldBePositive = errors.New("uint should be positive")
+	ErrorEnumValues           = errors.New("enum has empty configuration")
+	ErrorEnumNotValidValue    = errors.New("enum has not valid value")
 )

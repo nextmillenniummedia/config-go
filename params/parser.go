@@ -23,6 +23,14 @@ func ParseParams(tag string) (*Params, error) {
 	if len(splitter) == 0 {
 		splitter = ","
 	}
+	enum, enumHas := paramsMap["enum"]
+	if enumHas && len(enum) == 0 {
+		return nil, errors.ErrorEnumValues
+	}
+	enumValues := []string{}
+	if len(enum) != 0 {
+		enumValues = strings.Split(enum, "|")
+	}
 	format := strings.ToLower(paramsMap["format"])
 	doc := paramsMap["doc"]
 	field := paramsMap["field"]
@@ -33,6 +41,7 @@ func ParseParams(tag string) (*Params, error) {
 		Required: require,
 		Format:   format,
 		Default:  defaultValue,
+		Enum:     enumValues,
 		Doc:      doc,
 	}, nil
 }

@@ -141,3 +141,27 @@ func TestParseAllowedParams(t *testing.T) {
 		assert.NotNil(err, test)
 	}
 }
+
+func TestParseEnum(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	tests := []TestItem{
+		{"enum=a", Params{Enum: []string{"a"}}, nil},
+		{"enum=a|b", Params{Enum: []string{"a", "b"}}, nil},
+	}
+
+	testsErrors := []TestItem{
+		{"enum=", Params{Enum: []string{}}, errors.ErrorEnumValues},
+	}
+
+	for _, test := range tests {
+		params, _ := ParseParams(test.value)
+		assert.Equal(test.params.Enum, params.Enum, test)
+	}
+
+	for _, test := range testsErrors {
+		_, err := ParseParams(test.value)
+		assert.Equal(err, test.err)
+	}
+}

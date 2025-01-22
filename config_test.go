@@ -20,13 +20,13 @@ func TestConfigString(t *testing.T) {
 		Prefix: "STRING",
 	}
 	env := newEnvsMock(map[string]string{
-		"STRING_TEXT": "domain.com",
+		"STRING_TEXT": "http://domain.com",
 	})
 	processor := InitConfig(&config, settings).SetEnv(env)
 	err := processor.Process()
 
 	assert.Nil(err)
-	assert.Equal("domain.com", config.Text)
+	assert.Equal("http://domain.com", config.Text)
 }
 
 func TestConfigBool(t *testing.T) {
@@ -483,6 +483,48 @@ func TestFormatUrlErrorSlice(t *testing.T) {
 
 	assert.NotNil(err)
 	assert.Equal("URL_HOSTS: parse \"domain1.com/\": invalid URI for request\n", err.Error())
+}
+
+func TestEnumError(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Level string `config:"enum=info|error"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "ENUM",
+	}
+	env := newEnvsMock(map[string]string{
+		"ENUM_LEVEL": "verbose",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.NotNil(err)
+	assert.Equal("ENUM_LEVEL: enum has not valid value - 'verbose' not contained in the enum list\n", err.Error())
+}
+
+func TestEnumErrorSlice(t *testing.T) {
+	assert := assert.New(t)
+	t.Parallel()
+
+	type Config struct {
+		Envs []string `config:"enum=prod|dev"`
+	}
+	config := Config{}
+	settings := Setting{
+		Prefix: "ENUM",
+	}
+	env := newEnvsMock(map[string]string{
+		"ENUM_ENVS": "qa,local,prod",
+	})
+	processor := InitConfig(&config, settings).SetEnv(env)
+	err := processor.Process()
+
+	assert.NotNil(err)
+	assert.Equal("ENUM_ENVS: enum has not valid value - 'qa', 'local' not contained in the enum list\n", err.Error())
 }
 
 func newEnvsMock(values map[string]string) IEnv {

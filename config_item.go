@@ -69,6 +69,10 @@ func (ci *configItem) Process() {
 		return
 	}
 
+	if hasEnumError := ci.validateEnum(env); hasEnumError {
+		return
+	}
+
 	switch ci.field.Kind() {
 	case reflect.String:
 		ci.setString(env)
@@ -113,6 +117,40 @@ func (ci configItem) GetErrorsMessage() string {
 
 func (ci *configItem) clear() {
 	ci.errs = []error{}
+}
+
+func (ci *configItem) validateEnum(env string) (hasError bool) {
+	if ci.params.Enum == nil || len(ci.params.Enum) == 0 {
+		return false
+	}
+
+	makeError := func(values ...string) error {
+		fields := []string{}
+		for _, field := range values {
+			fields = append(fields, "'"+field+"'")
+		}
+		fieldsString := strings.Join(fields, ", ")
+		return fmt.Errorf("%w - %s not contained in the enum list", errors.ErrorEnumNotValidValue, fieldsString)
+	}
+	if ci.params.Enum != nil {
+		if ci.field.Kind() == reflect.Slice {
+			values := strings.Split(env, ci.params.Splitter)
+			errorFields := []string{}
+			for _, value := range values {
+				if !slices.Contains(ci.params.Enum, value) {
+					errorFields = append(errorFields, value)
+					hasError = true
+				}
+			}
+			ci.appendError(makeError(errorFields...))
+		} else {
+			if !slices.Contains(ci.params.Enum, env) {
+				ci.appendError(makeError(env))
+				hasError = true
+			}
+		}
+	}
+	return hasError
 }
 
 func (ci *configItem) setString(env string) {
