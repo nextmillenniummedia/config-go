@@ -81,10 +81,9 @@ if err != nil {
 
 ## TODO
 
+- CamelToUnderscore converter for name fields
 - ip format
 - pointer
-- CamelToUnderscore converter for name fields
-- default value
 - tests for errors
-- enum
 - formatter and type matching
+- export config to md table
