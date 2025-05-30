@@ -142,7 +142,9 @@ func (ci *configItem) validateEnum(env string) (hasError bool) {
 					hasError = true
 				}
 			}
-			ci.appendError(makeError(errorFields...))
+			if len(errorFields) > 0 {
+				ci.appendError(makeError(errorFields...))
+			}
 		} else {
 			if !slices.Contains(ci.params.Enum, env) {
 				ci.appendError(makeError(env))
